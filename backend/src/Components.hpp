@@ -13,10 +13,14 @@
 
 #include "oatpp/core/macro/component.hpp"
 
+#include "TorrentComponents.hpp"
+
 /**
  * component registrar for oatpp::base::Environment
 */
 class Components {
+    TorrentComponents torrentComponents;
+
     /**
      * create async executor
     */
