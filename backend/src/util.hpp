@@ -11,6 +11,15 @@
 
 namespace util {
 
+class BadResultAccess : public std::runtime_error {
+public:
+    explicit BadResultAccess(char const* const message) noexcept : std::runtime_error(message) {}
+    
+    char const* what() const noexcept override {
+        return exception::what();
+    }
+};
+
 template<class T, class E>
 class Result {
 private:
@@ -42,14 +51,14 @@ public:
 
     T value() {
         if (m_resultType != ResultType::OK) {
-            throw std::runtime_error("can't get value of error type");
+            throw BadResultAccess("can't get value of error type");
         }
         return m_value.get<T>();
     }
 
     E error() {
         if (m_resultType != ResultType::ERROR) {
-            throw std::runtime_error("can't get error of ok value");
+            throw BadResultAccess("can't get error of ok value");
         }
         return m_value.get<E>();
     }
