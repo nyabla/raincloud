@@ -4,6 +4,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
 */
 
+#pragma once
+
 namespace util {
 
 #include <stdexcept>
@@ -16,9 +18,7 @@ private:
         OK,
     };
 
-    typedef std::variant<T, E> ResultValue;
-
-    ResultValue m_value;
+    std::variant<T, E> m_value;
     ResultType m_resultType;
 
     Result(ResultType resultType) : m_resultType(resultType) {};
