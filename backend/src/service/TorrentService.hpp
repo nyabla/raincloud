@@ -18,9 +18,8 @@
 #include "../util.hpp"
 
 class TorrentService {
-private:
-    using AddTorrentResult = util::Result<lt::sha1_hash, lt::error_code>;
 public:
+    using AddTorrentResult = util::Result<lt::sha1_hash, lt::error_code>;
     class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, AddTorrentResult> {
     private:
         OATPP_COMPONENT(std::shared_ptr<lt::session>, m_session);
