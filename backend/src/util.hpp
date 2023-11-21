@@ -45,18 +45,18 @@ public:
         return result;
     }
 
-    bool ok() {
+    bool ok() const {
         return m_resultType == ResultType::OK;
     }
 
-    T value() {
+    T value() const {
         if (m_resultType != ResultType::OK) {
             throw BadResultAccess("can't get value of error type");
         }
         return std::get<T>(m_value);
     }
 
-    E error() {
+    E error() const {
         if (m_resultType != ResultType::ERROR) {
             throw BadResultAccess("can't get error of ok value");
         }
