@@ -6,8 +6,11 @@
 
 #pragma once
 
+#include <iomanip>
 #include <stdexcept>
 #include <variant>
+
+#include <libtorrent/info_hash.hpp>
 
 namespace util {
 
@@ -63,5 +66,17 @@ public:
         return std::get<E>(m_value);
     }
 };
+
+template<std::ptrdiff_t N>
+std::string hashToHex(lt::digest32<N> hash) {
+    std::stringstream hexStream;
+    
+    for (auto byte = hash.begin(); byte != hash.end(); ++byte) {
+        int byteAsInt = static_cast<int>(*byte);
+        hexStream << std::setfill('0') << std::setw(2) << std::hex << byteAsInt;
+    }
+
+    return hexStream.str();
+}
 
 }
