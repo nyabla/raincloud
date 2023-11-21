@@ -24,7 +24,7 @@ public:
         const std::string m_magnet;
         lt::torrent_handle m_torrentHandle;
     public:
-        AddTorrent(const std::string magnet) : m_magnet(magnet) {}
+        explicit AddTorrent(const std::string& magnet) : m_magnet(magnet) {}
 
         Action act() override {
             try {
