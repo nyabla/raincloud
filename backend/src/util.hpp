@@ -6,9 +6,9 @@
 
 #pragma once
 
-namespace util {
-
 #include <stdexcept>
+
+namespace util {
 
 template<class T, class E>
 class Result {
@@ -21,7 +21,7 @@ private:
     std::variant<T, E> m_value;
     ResultType m_resultType;
 
-    Result(ResultType resultType) : m_resultType(resultType) {};
+    explicit Result(ResultType resultType) : m_resultType(resultType) {};
 public:
     static Result Ok(T value) {
         Result result(ResultType::OK);
