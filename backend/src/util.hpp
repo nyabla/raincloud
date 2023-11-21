@@ -40,8 +40,8 @@ public:
     }
 
     static Result Err(E error) {
-        Result result(esultType::ERROR);
-        result.m_error = error;
+        Result result(ResultType::ERROR);
+        result.m_value = error;
         return result;
     }
 
@@ -53,14 +53,14 @@ public:
         if (m_resultType != ResultType::OK) {
             throw BadResultAccess("can't get value of error type");
         }
-        return m_value.get<T>();
+        return std::get<T>(m_value);
     }
 
     E error() {
         if (m_resultType != ResultType::ERROR) {
             throw BadResultAccess("can't get error of ok value");
         }
-        return m_value.get<E>();
+        return std::get<E>(m_value);
     }
 };
 
