@@ -8,6 +8,7 @@
 
 #include "oatpp/core/macro/component.hpp"
 
+#include <libtorrent/info_hash.hpp>
 #include <libtorrent/error_code.hpp>
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/session.hpp>
@@ -18,7 +19,7 @@
 
 class TorrentService {
 private:
-    using AddTorrentResult = util::Result<std::string, lt::error_code>;
+    using AddTorrentResult = util::Result<lt::sha1_hash, lt::error_code>;
 public:
     class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, AddTorrentResult> {
     private:
@@ -52,7 +53,7 @@ public:
             }
 
             return _return(
-                AddTorrentResult::Ok(m_torrentHandle.info_hash().to_string())
+                AddTorrentResult::Ok(m_torrentHandle.info_hash())
             );
         }
     };
