@@ -7,6 +7,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <variant>
 
 namespace util {
 
