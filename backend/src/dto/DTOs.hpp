@@ -11,7 +11,7 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-namespace DTO {
+namespace dto {
 
 class TorrentAddRequest : public oatpp::DTO {
     DTO_INIT(TorrentAddRequest, DTO);
