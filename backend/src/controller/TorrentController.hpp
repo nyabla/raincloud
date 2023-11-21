@@ -10,11 +10,14 @@
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 
-#include OATPP_CODEGEN_BEGIN(ApiController)
+#include "../dto/DTOs.hpp"
+#include "../service/TorrentService.hpp"
+#include "../util.hpp"
 
 class TorrentController : public oatpp::web::server::api::ApiController {
 public:
-    TorrentController(const std::shared_ptr<ObjectMapper>& objectMapper)
+    typedef TorrentController __ControllerType;
+    explicit TorrentController(const std::shared_ptr<ObjectMapper>& objectMapper)
         : oatpp::web::server::api::ApiController(objectMapper) {}; 
 
     static std::shared_ptr<TorrentController> createShared(
@@ -22,6 +25,37 @@ public:
     ) {
         return std::make_shared<TorrentController>(objectMapper);
     }
-};
 
-#include OATPP_CODEGEN_END(ApiController)
+    #include OATPP_CODEGEN_BEGIN(ApiController)
+
+    ENDPOINT_ASYNC("POST", "/addTorrent", AddTorrent) {
+        ENDPOINT_ASYNC_INIT(AddTorrent)
+
+        Action act() override {
+            return request->readBodyToDtoAsync<oatpp::Object<dto::TorrentAddRequest>>(controller->getDefaultObjectMapper())
+                .callbackTo(&AddTorrent::addTorrentRequest);
+        }
+
+        Action addTorrentRequest(const oatpp::Object<dto::TorrentAddRequest>& request) {
+            auto dto = request.get();
+            auto magnet = dto->magnet.getValue("");
+            return torrentService::AddTorrent::startForResult(magnet)
+                .callbackTo(&AddTorrent::addTorrentResult);
+        }
+
+        Action addTorrentResult(const torrentService::AddTorrentResult& result) {
+            if (result.ok()) {
+                auto response = dto::TorrentAddResponse::createShared();
+                response->infoHash = util::hashToHex(result.value());
+                return _return(controller->createDtoResponse(
+                    Status::CODE_200,
+                    response
+                ));
+            }
+            
+            return _return(controller->createResponse(Status::CODE_400, "couldn't parse magnet"));
+        }
+    };
+
+    #include OATPP_CODEGEN_END(ApiController)
+};
