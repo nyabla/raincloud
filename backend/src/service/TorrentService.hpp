@@ -15,7 +15,7 @@
 #include <libtorrent/torrent_flags.hpp>
 #include <libtorrent/torrent_handle.hpp>
 
-#include "util.hpp"
+#include "../util.hpp"
 
 class TorrentService {
 private:
