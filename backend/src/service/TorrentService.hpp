@@ -8,6 +8,7 @@
 
 #include "oatpp/core/macro/component.hpp"
 
+#include <libtorrent/error_code.hpp>
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/session.hpp>
 #include <libtorrent/torrent_flags.hpp>
@@ -16,8 +17,10 @@
 #include "util.hpp"
 
 class TorrentService {
+private:
+    using AddTorrentResult = util::Result<std::string, lt::error_code>;
 public:
-    class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, util::Result<std::string, std::string>> {
+    class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, AddTorrentResult> {
     private:
         OATPP_COMPONENT(std::shared_ptr<lt::session>, m_session);
 
@@ -27,16 +30,18 @@ public:
         explicit AddTorrent(const std::string& magnet) : m_magnet(magnet) {}
 
         Action act() override {
-            try {
-                auto torrentParams = lt::parse_magnet_uri(m_magnet);
-                torrentParams.flags = lt::torrent_flags::default_dont_download;
+            lt::error_code error;
+            auto torrentParams = lt::parse_magnet_uri(m_magnet, error);
 
-                m_torrentHandle = m_session->add_torrent(torrentParams);
-            } catch (std::exception e) {
+            if (error != lt::errors::no_error) {
                 _return(
-                    util::Result<std::string, std::string>::Err("oops")
+                    AddTorrentResult::Err(error)
                 );
             }
+
+            torrentParams.flags = lt::torrent_flags::default_dont_download;
+
+            m_torrentHandle = m_session->add_torrent(torrentParams);
 
             return yieldTo(&AddTorrent::checkReady);
         }
@@ -47,7 +52,7 @@ public:
             }
 
             return _return(
-                util::Result<std::string, std::string>::Ok(m_torrentHandle.info_hash().to_string())
+                AddTorrentResult::Ok(m_torrentHandle.info_hash().to_string())
             );
         }
     };
