@@ -31,15 +31,14 @@ namespace torrentService {
         Action act() override {
             lt::error_code error;
             auto torrentParams = lt::parse_magnet_uri(m_magnet, error);
-
-            if (error != lt::errors::no_error) {
-                _return(
+            if (error.value() != lt::errors::no_error) {
+                return _return(
                     AddTorrentResult::Err(error)
                 );
             }
 
             torrentParams.flags = lt::torrent_flags::default_dont_download;
-
+            
             m_torrentHandle = m_session->add_torrent(torrentParams);
 
             return yieldTo(&AddTorrent::checkReady);
