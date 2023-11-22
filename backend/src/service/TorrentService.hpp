@@ -20,6 +20,7 @@
 namespace torrentService {
     namespace {
         using AddTorrentResult = util::Result<lt::sha1_hash, lt::error_code>;
+        using GetTorrentInfoResult = util::Result<std::shared_ptr<const lt::torrent_info>, lt::error_code>;
     };
 
     class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, const AddTorrentResult&> {
@@ -56,6 +57,30 @@ namespace torrentService {
 
             return _return(
                 Result::Ok(m_torrentHandle.info_hash())
+            );
+        }
+    };
+
+    class GetTorrentInfo : public oatpp::async::CoroutineWithResult<GetTorrentInfo, const GetTorrentInfoResult&> {
+    private:
+        OATPP_COMPONENT(std::shared_ptr<lt::session>, m_session);
+        const lt::sha1_hash m_infohash;
+
+    public:
+        using Result = GetTorrentInfoResult;
+
+        explicit GetTorrentInfo(const lt::sha1_hash& infohash) : m_infohash(infohash) {}
+
+        Action act() override {
+            auto torrentHandle = m_session->find_torrent(m_infohash);
+            if (!torrentHandle.is_valid()) {
+                return _return(
+                    Result::Err(lt::error_code(lt::errors::error_code_enum::invalid_info_hash))
+                );
+            }
+
+            return _return(
+                Result::Ok(torrentHandle.torrent_file())
             );
         }
     };
