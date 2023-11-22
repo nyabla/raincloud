@@ -16,7 +16,7 @@ namespace dto {
 class TorrentAddRequest : public oatpp::DTO {
     DTO_INIT(TorrentAddRequest, DTO);
 
-    DTO_FIELD(String, magnet);
+    DTO_FIELD(String, magnet) = "";
 };
 
 class TorrentAddResponse : public oatpp::DTO {
