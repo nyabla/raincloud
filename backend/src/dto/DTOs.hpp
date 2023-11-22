@@ -25,6 +25,19 @@ class TorrentAddResponse : public oatpp::DTO {
     DTO_FIELD(String, infoHash, "infohash");
 };
 
+class TorrentListFilesRequest : public oatpp::DTO {
+    DTO_INIT(TorrentListFilesRequest, DTO);
+
+    DTO_FIELD(String, infoHash, "infohash") = std::string(40, '0');
+};
+
+class TorrentListFilesResponse : public oatpp::DTO {
+    DTO_INIT(TorrentListFilesResponse, DTO);
+
+    DTO_FIELD(Int16, filesCount);
+    DTO_FIELD(Vector<String>, files);
+};
+
 }
 
 #include OATPP_CODEGEN_END(DTO)
