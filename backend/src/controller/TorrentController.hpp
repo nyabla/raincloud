@@ -60,5 +60,63 @@ public:
         }
     };
 
+    ENDPOINT_ASYNC("POST", "/listFiles", ListFiles) {
+        ENDPOINT_ASYNC_INIT(ListFiles)
+
+        Action act() override {
+            return request->readBodyToDtoAsync<oatpp::Object<dto::TorrentListFilesRequest>>(
+                controller->getDefaultObjectMapper()
+            ).callbackTo(&ListFiles::listFilesRequest);
+        }
+
+        Action listFilesRequest(const oatpp::Object<dto::TorrentListFilesRequest>& request) {
+            auto dto = request.get();
+            auto infoHashString = dto->infoHash.getValue("");
+
+            lt::sha1_hash infoHash;
+
+            try {
+                const auto n = infoHash.size() * 8;
+                infoHash = util::hexToHash<n>(infoHashString);
+            } catch (const std::invalid_argument& error) {
+                return _return(controller->createResponse(
+                    Status::CODE_400,
+                    error.what()
+                ));
+            }
+
+            return torrentService::GetTorrentInfo::startForResult(infoHash)
+                .callbackTo(&ListFiles::listFilesResponse);
+        }
+
+        Action listFilesResponse(const torrentService::GetTorrentInfo::Result& result) {
+            if (!result.ok()) {
+                return _return(controller->createResponse(
+                    Status::CODE_404,
+                    result.error().message()
+                ));
+            }
+
+            auto torrentInfo = result.value();
+
+            auto response = dto::TorrentListFilesResponse::createShared();
+            response->filesCount = torrentInfo->num_files();
+
+            auto torrentFiles = torrentInfo->files();
+            
+            response->files = {};
+
+            for (auto fileIndex : torrentFiles.file_range()) {
+                auto name = torrentFiles.file_name(fileIndex);
+                response->files->push_back(name.to_string());
+            }
+
+            return _return(controller->createDtoResponse(
+                Status::CODE_200,
+                response
+            ));
+        }
+    };
+
     #include OATPP_CODEGEN_END(ApiController)
 };
