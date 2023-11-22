@@ -44,16 +44,19 @@ public:
         }
 
         Action addTorrentResult(const torrentService::AddTorrent::Result& result) {
-            if (result.ok()) {
-                auto response = dto::TorrentAddResponse::createShared();
-                response->infoHash = util::hashToHex(result.value());
-                return _return(controller->createDtoResponse(
-                    Status::CODE_200,
-                    response
+            if (!result.ok()) {
+                return _return(controller->createResponse(
+                    Status::CODE_400,
+                    result.error().message()
                 ));
             }
-            
-            return _return(controller->createResponse(Status::CODE_400, "couldn't parse magnet"));
+
+            auto response = dto::TorrentAddResponse::createShared();
+            response->infoHash = util::hashToHex(result.value());
+            return _return(controller->createDtoResponse(
+                Status::CODE_200,
+                response
+            ));
         }
     };
 
