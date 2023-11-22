@@ -18,14 +18,15 @@
 #include "../util.hpp"
 
 namespace torrentService {
-    using AddTorrentResult = util::Result<lt::sha1_hash, lt::error_code>;
-    class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, const AddTorrentResult&> {
+    class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, const AddTorrent::Result&> {
     private:
         OATPP_COMPONENT(std::shared_ptr<lt::session>, m_session);
 
         const std::string m_magnet;
         lt::torrent_handle m_torrentHandle;
     public:
+        using Result = util::Result<lt::sha1_hash, lt::error_code>;
+
         explicit AddTorrent(const std::string& magnet) : m_magnet(magnet) {}
 
         Action act() override {
@@ -33,7 +34,7 @@ namespace torrentService {
             auto torrentParams = lt::parse_magnet_uri(m_magnet, error);
             if (error.value() != lt::errors::no_error) {
                 return _return(
-                    AddTorrentResult::Err(error)
+                    Result::Err(error)
                 );
             }
 
@@ -50,7 +51,7 @@ namespace torrentService {
             }
 
             return _return(
-                AddTorrentResult::Ok(m_torrentHandle.info_hash())
+                Result::Ok(m_torrentHandle.info_hash())
             );
         }
     };

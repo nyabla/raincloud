@@ -43,7 +43,7 @@ public:
                 .callbackTo(&AddTorrent::addTorrentResult);
         }
 
-        Action addTorrentResult(const torrentService::AddTorrentResult& result) {
+        Action addTorrentResult(const torrentService::AddTorrent::Result& result) {
             if (result.ok()) {
                 auto response = dto::TorrentAddResponse::createShared();
                 response->infoHash = util::hashToHex(result.value());
