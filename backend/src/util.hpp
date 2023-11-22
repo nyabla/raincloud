@@ -79,4 +79,24 @@ std::string hashToHex(lt::digest32<N> hash) {
     return hexStream.str();
 }
 
+template<std::ptrdiff_t N>
+lt::digest32<N> hexToHash(std::string& hex) {
+    if (hex.length() * 4 != N) {
+        throw std::invalid_argument("hex string is wrong length");
+    }
+
+    const int numBytes = hex.length() / 2U;
+    
+    char buffer[numBytes];
+
+    for (int i = 0; i < numBytes; i++) {
+        std::stringstream hexByteStream(hex.substr(2 * i, 2));
+        int byte;
+        hexByteStream >> std::hex >> byte;
+        buffer[i] = static_cast<char>(byte);
+    }
+
+    return lt::digest32<N>(buffer);
+}
+
 }
