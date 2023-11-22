@@ -18,14 +18,18 @@
 #include "../util.hpp"
 
 namespace torrentService {
-    class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, const AddTorrent::Result&> {
+    namespace {
+        using AddTorrentResult = util::Result<lt::sha1_hash, lt::error_code>;
+    };
+
+    class AddTorrent : public oatpp::async::CoroutineWithResult<AddTorrent, const AddTorrentResult&> {
     private:
         OATPP_COMPONENT(std::shared_ptr<lt::session>, m_session);
 
         const std::string m_magnet;
         lt::torrent_handle m_torrentHandle;
     public:
-        using Result = util::Result<lt::sha1_hash, lt::error_code>;
+        using Result = AddTorrentResult;
 
         explicit AddTorrent(const std::string& magnet) : m_magnet(magnet) {}
 
