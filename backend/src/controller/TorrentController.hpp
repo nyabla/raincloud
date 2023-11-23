@@ -60,18 +60,11 @@ public:
         }
     };
 
-    ENDPOINT_ASYNC("POST", "/listFiles", ListFiles) {
+    ENDPOINT_ASYNC("GET", "/torrent/{infoHash}/files", ListFiles) {
         ENDPOINT_ASYNC_INIT(ListFiles)
 
         Action act() override {
-            return request->readBodyToDtoAsync<oatpp::Object<dto::TorrentListFilesRequest>>(
-                controller->getDefaultObjectMapper()
-            ).callbackTo(&ListFiles::listFilesRequest);
-        }
-
-        Action listFilesRequest(const oatpp::Object<dto::TorrentListFilesRequest>& request) {
-            auto dto = request.get();
-            auto infoHashString = dto->infoHash.getValue("");
+            auto infoHashString = request->getPathVariable("infoHash").getValue("");
 
             lt::sha1_hash infoHash;
 
