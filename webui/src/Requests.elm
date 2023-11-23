@@ -2,6 +2,8 @@ module Requests exposing (..)
 
 import Http
 import Codec
+import Config exposing (config)
+import Url.Builder exposing (crossOrigin)
 
 type alias AddTorrentResult = Result Http.Error Codec.TorrentAddResponse
 
@@ -10,7 +12,7 @@ addTorrent magnet message =
   Http.request
     { method = "POST"
     , headers = []
-    , url = "http://localhost:8080/addTorrent"
+    , url = crossOrigin config.apiBase [ "addTorrent" ] []
     , body = Http.jsonBody
       <| Codec.torrentAddRequestEncoder
       <| Codec.TorrentAddRequest magnet
@@ -26,7 +28,7 @@ getTorrentFiles infoHash message =
   Http.request
     { method = "POST" 
     , headers = []
-    , url = "http://localhost:8080/listFiles"
+    , url = crossOrigin config.apiBase [ "listFiles" ] []
     , body = Http.jsonBody
       <| Codec.torrentListFilesRequestEncoder
       <| Codec.TorrentListFilesRequest infoHash
