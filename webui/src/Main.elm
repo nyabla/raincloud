@@ -1,14 +1,10 @@
 module Main exposing (..)
 
-import Browser
+import Browser exposing (Document)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Browser exposing (Document)
-import Html.Events exposing (onSubmit)
-import Html.Events exposing (onInput)
-import Requests exposing (addTorrent)
-import Requests exposing (RequestStatus)
-import Requests exposing (RequestStatus(..))
+import Html.Events exposing (onSubmit, onInput)
+import Requests exposing (addTorrent, RequestStatus(..))
 
 -- MAIN
 
