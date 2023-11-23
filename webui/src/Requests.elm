@@ -32,7 +32,7 @@ addTorrent magnet toMsg =
       <| Codec.torrentAddRequestEncoder
       <| Codec.TorrentAddRequest magnet
     , expect = expectApiResponse toMsg Codec.torrentAddResponseDecoder
-    , timeout = Just (30 * 1000)
+    , timeout = config.requestTimeout
     , tracker = Nothing
     }
 
@@ -46,7 +46,7 @@ getTorrentFiles infoHash message =
     , url = crossOrigin config.apiBase [ "torrent", infoHash, "files" ] []
     , body = Http.emptyBody
     , expect = expectApiResponse message Codec.torrentListFilesResponseDecoder
-    , timeout = Just (30 * 1000)
+    , timeout = config.requestTimeout
     , tracker = Nothing
     }
 
