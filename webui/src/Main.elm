@@ -33,6 +33,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
   ( { magnetUri = "" 
     , infoHash = None
+    , torrentFiles = None
     }
     , Cmd.none
   )
