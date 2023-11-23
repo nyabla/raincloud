@@ -5,6 +5,12 @@ import Codec
 import Config exposing (config)
 import Url.Builder exposing (crossOrigin)
 
+type RequestStatus a
+  = None
+  | Loading
+  | Error String
+  | Result a
+
 type alias AddTorrentResult = Result Http.Error Codec.TorrentAddResponse
 
 addTorrent : String -> (AddTorrentResult -> msg) -> Cmd msg

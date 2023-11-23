@@ -7,6 +7,8 @@ import Browser exposing (Document)
 import Html.Events exposing (onSubmit)
 import Html.Events exposing (onInput)
 import Requests exposing (addTorrent)
+import Requests exposing (RequestStatus)
+import Requests exposing (RequestStatus(..))
 
 -- MAIN
 
@@ -21,15 +23,10 @@ main =
 
 -- MODEL
 
-type InfoHashStatus
-  = None
-  | Loading
-  | Error String
-  | Hash String
-
 type alias Model =
   { magnetUri : String
-  , infoHash : InfoHashStatus
+  , infoHash : RequestStatus String
+  , torrentFiles : RequestStatus (List String)
   }
 
 init : () -> ( Model, Cmd Msg )
@@ -68,7 +65,7 @@ gotInfoHash : Requests.AddTorrentResult -> Model -> ( Model, Cmd Msg )
 gotInfoHash result model =
   case result of
     Ok response ->
-      ( { model | infoHash = Hash response.infoHash }
+      ( { model | infoHash = Result response.infoHash }
       , Cmd.none
       )
     Err _ ->
@@ -92,7 +89,7 @@ view model =
     ]
   }
 
-displayInfoHash : InfoHashStatus -> Html Msg
+displayInfoHash : RequestStatus String -> Html Msg
 displayInfoHash infoHash =
   case infoHash of
     None ->
@@ -101,7 +98,7 @@ displayInfoHash infoHash =
       text "loading infohash"
     Error message ->
       text ( "Error: " ++ message )
-    Hash hash ->
+    Result hash ->
       text hash
 
 -- SUBSCRIPTIONS
