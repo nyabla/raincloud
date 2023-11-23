@@ -1,6 +1,6 @@
 module Codec exposing (..)
 
-import Json.Decode exposing (Decoder, field, string, int, list, map, map2)
+import Json.Decode exposing (Decoder, field, string, list, map)
 import Json.Encode
 
 -- ADD TORRENT
@@ -27,12 +27,10 @@ torrentAddResponseDecoder =
 -- GET FILES
 
 type alias TorrentListFilesResponse =
-  { filesCount : Int
-  , files : List String
+  { files : List String
   }
 
 torrentListFilesResponseDecoder : Decoder TorrentListFilesResponse
 torrentListFilesResponseDecoder =
-  map2 TorrentListFilesResponse
-    (field "filesCount" int)
+  map TorrentListFilesResponse
     (field "files" (list string))

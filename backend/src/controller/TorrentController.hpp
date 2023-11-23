@@ -93,7 +93,6 @@ public:
             auto torrentInfo = result.value();
 
             auto response = dto::TorrentListFilesResponse::createShared();
-            response->filesCount = torrentInfo->num_files();
 
             auto torrentFiles = torrentInfo->files();
             

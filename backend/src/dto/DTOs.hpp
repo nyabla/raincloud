@@ -28,7 +28,6 @@ class TorrentAddResponse : public oatpp::DTO {
 class TorrentListFilesResponse : public oatpp::DTO {
     DTO_INIT(TorrentListFilesResponse, DTO);
 
-    DTO_FIELD(Int16, filesCount);
     DTO_FIELD(Vector<String>, files);
 };
 
