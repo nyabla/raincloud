@@ -4,7 +4,8 @@ import Browser exposing (Document)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onSubmit, onInput)
-import Requests exposing (addTorrent, RequestStatus(..))
+import Requests exposing (addTorrent, getTorrentFiles, RequestStatus(..))
+import Debug exposing (toString)
 
 -- MAIN
 
@@ -55,18 +56,30 @@ update msg model =
       )
     TorrentAdded result ->
       gotInfoHash result model
-    _ ->
-      ( model, Cmd.none )
+    TorrentFiles result ->
+      gotFiles result model
 
 gotInfoHash : Requests.AddTorrentResult -> Model -> ( Model, Cmd Msg )
 gotInfoHash result model =
   case result of
     Ok response ->
       ( { model | infoHash = Result response.infoHash }
-      , Cmd.none
+      , getTorrentFiles response.infoHash TorrentFiles
       )
     Err _ ->
       ( { model | infoHash = Error "oops" }
+      , Cmd.none
+      )
+
+gotFiles : Requests.GetFilesListResult -> Model -> ( Model, Cmd Msg )
+gotFiles result model =
+  case result of
+    Ok response ->
+      ( { model | torrentFiles = Result response.files }
+      , Cmd.none
+      )
+    Err _ ->
+      ( { model | torrentFiles = Error "oops" }
       , Cmd.none
       )
 
@@ -83,6 +96,7 @@ view model =
       , input [ type_ "submit" ] []
       ]
     , p [] [ displayInfoHash model.infoHash ]
+    , div [] [ displayFiles model.torrentFiles ]
     ]
   }
 
@@ -97,6 +111,14 @@ displayInfoHash infoHash =
       text ( "Error: " ++ message )
     Result hash ->
       text hash
+
+displayFiles : RequestStatus (List String) -> Html Msg
+displayFiles filesResult =
+  case filesResult of
+    Result files ->
+      pre [] [ text (toString files) ]
+    _ ->
+      text ""
 
 -- SUBSCRIPTIONS
 
