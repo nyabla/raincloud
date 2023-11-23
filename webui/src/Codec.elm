@@ -26,20 +26,10 @@ torrentAddResponseDecoder =
 
 -- GET FILES
 
-type alias TorrentListFilesRequest =
-  { infoHash : String
-  }
-
 type alias TorrentListFilesResponse =
   { filesCount : Int
   , files : List String
   }
-
-torrentListFilesRequestEncoder :  TorrentListFilesRequest -> Json.Encode.Value
-torrentListFilesRequestEncoder request =
-  Json.Encode.object
-    [ ( "infohash", Json.Encode.string request.infoHash )
-    ]
 
 torrentListFilesResponseDecoder : Decoder TorrentListFilesResponse
 torrentListFilesResponseDecoder =

@@ -26,12 +26,10 @@ type alias GetFilesListResult = Result Http.Error Codec.TorrentListFilesResponse
 getTorrentFiles : String -> (GetFilesListResult -> msg) -> Cmd msg
 getTorrentFiles infoHash message =
   Http.request
-    { method = "POST" 
+    { method = "GET" 
     , headers = []
-    , url = crossOrigin config.apiBase [ "listFiles" ] []
-    , body = Http.jsonBody
-      <| Codec.torrentListFilesRequestEncoder
-      <| Codec.TorrentListFilesRequest infoHash
+    , url = crossOrigin config.apiBase [ "torrent", infoHash, "files" ] []
+    , body = Http.emptyBody
     , expect = Http.expectJson message Codec.torrentListFilesResponseDecoder
     , timeout = Just (30 * 1000)
     , tracker = Nothing
