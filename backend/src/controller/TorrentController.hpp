@@ -91,11 +91,9 @@ public:
             }
 
             auto torrentInfo = result.value();
-
-            auto response = dto::TorrentListFilesResponse::createShared();
-
             auto torrentFiles = torrentInfo->files();
             
+            auto response = dto::TorrentListFilesResponse::createShared();
             response->files = {};
 
             for (auto fileIndex : torrentFiles.file_range()) {
